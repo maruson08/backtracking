@@ -2599,8 +2599,8 @@ function showAnalysis() {
 
             감소율:
 ${percentDecrease(
-    liveStats.basic.recursiveCalls,
-    liveStats.mrv.recursiveCalls
+    liveStats.naive.recursiveCalls,
+    liveStats.basic.recursiveCalls
 )}%
 
             </p>
@@ -2630,10 +2630,16 @@ ${percentDecrease(
 
             <p class="reduction">
 
-            감소율:
+Naive 대비 감소율:
             ${percentDecrease(
     liveStats.naive.recursiveCalls,
-    liveStats.basic.recursiveCalls
+    liveStats.mrv.recursiveCalls
+)}%
+
+            Basic 대비 감소율:
+            ${percentDecrease(
+    liveStats.basic.recursiveCalls,
+    liveStats.mrv.recursiveCalls
 )}%
 
             </p>
