@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>4×4 Sudoku Algorithm Visualizer</title>
+
+    <link rel="stylesheet" href="style.css">
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+
+<div class="background-blur"></div>
+
+<header class="hero">
+    <h1>4×4 Sudoku Algorithm Visualizer</h1>
+    <p>
+        Naive Backtracking · Basic Backtracking · MRV 비교 시각화
+    </p>
+</header>
+
+<main class="container">
+
+    <!-- 입력 영역 -->
+    <section class="card input-card">
+
+        <div class="card-header">
+            <h2>퍼즐 입력</h2>
+        </div>
+
+        <div class="card-body">
+
+            <div id="inputBoard" class="sudoku-input-board">
+
+                <!-- Row 0 -->
+                <input type="number" min="0" max="4" value="0" data-row="0" data-col="0">
+                <input type="number" min="0" max="4" value="0" data-row="0" data-col="1">
+                <input type="number" min="0" max="4" value="0" data-row="0" data-col="2">
+                <input type="number" min="0" max="4" value="0" data-row="0" data-col="3">
+
+                <!-- Row 1 -->
+                <input type="number" min="0" max="4" value="0" data-row="1" data-col="0">
+                <input type="number" min="0" max="4" value="0" data-row="1" data-col="1">
+                <input type="number" min="0" max="4" value="0" data-row="1" data-col="2">
+                <input type="number" min="0" max="4" value="0" data-row="1" data-col="3">
+
+                <!-- Row 2 -->
+                <input type="number" min="0" max="4" value="0" data-row="2" data-col="0">
+                <input type="number" min="0" max="4" value="0" data-row="2" data-col="1">
+                <input type="number" min="0" max="4" value="0" data-row="2" data-col="2">
+                <input type="number" min="0" max="4" value="0" data-row="2" data-col="3">
+
+                <!-- Row 3 -->
+                <input type="number" min="0" max="4" value="0" data-row="3" data-col="0">
+                <input type="number" min="0" max="4" value="0" data-row="3" data-col="1">
+                <input type="number" min="0" max="4" value="0" data-row="3" data-col="2">
+                <input type="number" min="0" max="4" value="0" data-row="3" data-col="3">
+
+            </div>
+
+            <div class="preset-buttons">
+                <button id="sampleBtn">
+                    예제 퍼즐
+                </button>
+
+                <button id="clearBtn">
+                    초기화
+                </button>
+
+                <button id="solveBtn" class="primary-btn">
+                    시각화 시작
+                </button>
+                
+            </div>
+<div class="speed-control">
+
+    <label for="speedRange">
+        애니메이션 속도
+    </label>
+
+    <input
+        type="range"
+        id="speedRange"
+        min="50"
+        max="1000"
+        value="120"
+        step="10"
+    >
+
+    <span id="speedValue">
+        120 ms
+    </span>
+
+</div>
+            <div class="input-guide">
+                <h4>입력 규칙</h4>
+                <ul>
+                    <li>0 = 빈 칸</li>
+                    <li>1~4 = 고정 숫자</li>
+                    <li>행 / 열 / 2×2 박스 충돌 금지</li>
+                </ul>
+            </div>
+
+        </div>
+
+    </section>
+
+    <!-- 알고리즘 비교 -->
+    <section class="comparison-grid">
+
+        <!-- Naive -->
+        <article class="algorithm-card">
+
+            <div class="algorithm-header naive">
+                <h2>Naive Backtracking</h2>
+                <span class="badge">First Empty Cell</span>
+            </div>
+
+            <div
+                id="naiveBoard"
+                class="sudoku-board">
+            </div>
+
+            <div class="info-panel">
+
+                <div class="info-row">
+                    <span>현재 위치</span>
+                    <span id="naiveCurrentCell">-</span>
+                </div>
+
+                <div class="info-row">
+                    <span>후보 목록</span>
+                    <span id="naiveCandidates">-</span>
+                </div>
+
+                <div class="info-row">
+                    <span>후보 개수</span>
+                    <span id="naiveCandidateCount">0</span>
+                </div>
+
+                <div class="info-row">
+                    <span>현재 시도</span>
+                    <span id="naiveTrying">-</span>
+                </div>
+
+            </div>
+
+            <div class="stats-panel">
+
+                <div class="stat-box">
+                    <label>현재 깊이</label>
+                    <strong id="naiveDepth">0</strong>
+                </div>
+
+                <div class="stat-box">
+                    <label>최대 깊이</label>
+                    <strong id="naiveMaxDepth">0</strong>
+                </div>
+
+                <div class="stat-box">
+                    <label>호출 수</label>
+                    <strong id="naiveCalls">0</strong>
+                </div>
+
+                <div class="stat-box">
+                    <label>백트래킹</label>
+                    <strong id="naiveBacktracks">0</strong>
+                </div>
+
+            </div>
+
+        </article>
+
+        <!-- Basic -->
+        <article class="algorithm-card">
+
+            <div class="algorithm-header basic">
+                <h2>Basic Backtracking</h2>
+                <span class="badge">
+                    Candidate Filtering
+                </span>
+            </div>
+
+            <div
+                id="basicBoard"
+                class="sudoku-board">
+            </div>
+
+            <div class="info-panel">
+
+                <div class="info-row">
+                    <span>현재 위치</span>
+                    <span id="basicCurrentCell">-</span>
+                </div>
+
+                <div class="info-row">
+                    <span>후보 목록</span>
+                    <span id="basicCandidates">-</span>
+                </div>
+
+                <div class="info-row">
+                    <span>후보 개수</span>
+                    <span id="basicCandidateCount">0</span>
+                </div>
+
+                <div class="info-row">
+                    <span>현재 시도</span>
+                    <span id="basicTrying">-</span>
+                </div>
+
+            </div>
+
+            <div class="stats-panel">
+
+                <div class="stat-box">
+                    <label>현재 깊이</label>
+                    <strong id="basicDepth">0</strong>
+                </div>
+
+                <div class="stat-box">
+                    <label>최대 깊이</label>
+                    <strong id="basicMaxDepth">0</strong>
+                </div>
+
+                <div class="stat-box">
+                    <label>호출 수</label>
+                    <strong id="basicCalls">0</strong>
+                </div>
+
+                <div class="stat-box">
+                    <label>백트래킹</label>
+                    <strong id="basicBacktracks">0</strong>
+                </div>
+
+            </div>
+
+        </article>
+
+        <!-- MRV -->
+        <article class="algorithm-card">
+
+            <div class="algorithm-header mrv">
+                <h2>MRV</h2>
+                <span class="badge">
+                    Minimum Remaining Values
+                </span>
+            </div>
+
+            <div
+                id="mrvBoard"
+                class="sudoku-board">
+            </div>
+
+            <div class="info-panel">
+
+                <div class="info-row">
+                    <span>현재 위치</span>
+                    <span id="mrvCurrentCell">-</span>
+                </div>
+
+                <div class="info-row">
+                    <span>후보 목록</span>
+                    <span id="mrvCandidates">-</span>
+                </div>
+
+                <div class="info-row">
+                    <span>후보 개수</span>
+                    <span id="mrvCandidateCount">0</span>
+                </div>
+
+                <div class="info-row">
+                    <span>현재 시도</span>
+                    <span id="mrvTrying">-</span>
+                </div>
+
+            </div>
+
+            <div class="stats-panel">
+
+                <div class="stat-box">
+                    <label>현재 깊이</label>
+                    <strong id="mrvDepth">0</strong>
+                </div>
+
+                <div class="stat-box">
+                    <label>최대 깊이</label>
+                    <strong id="mrvMaxDepth">0</strong>
+                </div>
+
+                <div class="stat-box">
+                    <label>호출 수</label>
+                    <strong id="mrvCalls">0</strong>
+                </div>
+
+                <div class="stat-box">
+                    <label>백트래킹</label>
+                    <strong id="mrvBacktracks">0</strong>
+                </div>
+
+            </div>
+
+        </article>
+
+    </section>
+
+    <!-- 그래프 -->
+    <section class="card chart-card">
+
+        <div class="card-header">
+            <h2>재귀 깊이 변화</h2>
+        </div>
+
+        <div class="chart-wrapper">
+            <canvas id="depthChart"></canvas>
+        </div>
+
+    </section>
+
+    <!-- 로그 -->
+    <section class="card log-card">
+
+        <div class="card-header">
+            <h2>실시간 이벤트 로그</h2>
+        </div>
+
+        <div id="logPanel" class="log-panel">
+        </div>
+
+    </section>
+
+    <!-- 결과 분석 -->
+    <section class="card analysis-card">
+
+        <div class="card-header">
+            <h2>결과 분석</h2>
+        </div>
+
+        <div id="analysisContent">
+
+            <div class="analysis-placeholder">
+
+                시각화를 시작하면 결과가 표시됩니다.
+
+            </div>
+
+        </div>
+
+    </section>
+
+</main>
+
+<footer class="footer">
+    <p>
+        Sudoku Search Strategy Comparison Visualizer
+    </p>
+</footer>
+
+<script src="app.js"></script>
+
+</body>
+</html>
